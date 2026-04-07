@@ -131,10 +131,10 @@ export default function Dashboard() {
     const hasFilter = fechaDesde || fechaHasta;
 
     return (
-        <div className="p-8 space-y-6">
+        <div className="p-4 sm:p-6 md:p-8 space-y-6">
             {/* Header */}
             <div>
-                <h1 className="font-serif text-3xl text-slate-800">
+                <h1 className="font-serif text-2xl sm:text-3xl text-slate-800">
                     Dashboard
                 </h1>
                 <p className="text-slate-400 text-sm mt-1">
@@ -166,7 +166,7 @@ export default function Dashboard() {
                     ))}
                 </div>
 
-                <div className="flex items-center gap-2 ml-auto">
+                <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
                     <span className="text-xs text-slate-400">Desde</span>
                     <input
                         type="date"

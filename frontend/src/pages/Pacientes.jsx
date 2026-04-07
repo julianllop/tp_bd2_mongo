@@ -194,15 +194,15 @@ export default function Pacientes() {
   ];
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 sm:p-6 md:p-8 space-y-6">
       <div>
-        <h1 className="font-serif text-3xl text-slate-800">Pacientes</h1>
+        <h1 className="font-serif text-2xl sm:text-3xl text-slate-800">Pacientes</h1>
         <p className="text-slate-400 text-sm mt-1">Gestión del padrón de pacientes</p>
       </div>
 
       {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="relative flex-1 max-w-xs">
+        <div className="relative flex-1 min-w-0 sm:max-w-xs">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             className="input pl-9"
@@ -290,7 +290,7 @@ export default function Pacientes() {
 
           <fieldset>
             <legend className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Datos personales</legend>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="label">DNI *</label>
                 <input className="input" name="dni" value={form.dni} onChange={handleChange} required />
@@ -328,7 +328,7 @@ export default function Pacientes() {
 
           <fieldset>
             <legend className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Contacto</legend>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="label">Teléfono</label>
                 <input className="input" name="contacto.telefono" value={form["contacto.telefono"]} onChange={handleChange} />
@@ -337,7 +337,7 @@ export default function Pacientes() {
                 <label className="label">Email</label>
                 <input className="input" type="email" name="contacto.email" value={form["contacto.email"]} onChange={handleChange} />
               </div>
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <label className="label">Dirección</label>
                 <input className="input" name="contacto.direccion" value={form["contacto.direccion"]} onChange={handleChange} />
               </div>
@@ -346,7 +346,7 @@ export default function Pacientes() {
 
           <fieldset>
             <legend className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Obra Social</legend>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="label">Nombre</label>
                 <input className="input" name="obraSocial.nombre" value={form["obraSocial.nombre"]} onChange={handleChange} />
@@ -366,7 +366,7 @@ export default function Pacientes() {
             <legend className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
               Antecedentes <span className="normal-case font-normal text-slate-400">(separar con comas)</span>
             </legend>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="label">Alergias</label>
                 <input className="input" name="antecedentes.alergias" value={form["antecedentes.alergias"]} onChange={handleChange} placeholder="Ej: Penicilina, AINEs" />

@@ -159,14 +159,14 @@ export default function Medicos() {
   ];
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 sm:p-6 md:p-8 space-y-6">
       <div>
-        <h1 className="font-serif text-3xl text-slate-800">Médicos</h1>
+        <h1 className="font-serif text-2xl sm:text-3xl text-slate-800">Médicos</h1>
         <p className="text-slate-400 text-sm mt-1">Gestión del cuerpo médico</p>
       </div>
 
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="relative flex-1 max-w-xs">
+        <div className="relative flex-1 min-w-0 sm:max-w-xs">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             className="input pl-9"
@@ -244,7 +244,7 @@ export default function Medicos() {
             <label className="label">Matrícula *</label>
             <input className="input" name="matricula" value={form.matricula} onChange={handleChange} required placeholder="Ej: MN-12345" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="label">Nombre *</label>
               <input className="input" name="nombre" value={form.nombre} onChange={handleChange} required />

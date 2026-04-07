@@ -240,9 +240,9 @@ export default function Consultas() {
   ];
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 sm:p-6 md:p-8 space-y-6">
       <div>
-        <h1 className="font-serif text-3xl text-slate-800">Consultas</h1>
+        <h1 className="font-serif text-2xl sm:text-3xl text-slate-800">Consultas</h1>
         <p className="text-slate-400 text-sm mt-1">Historial de consultas médicas</p>
       </div>
 
@@ -348,7 +348,7 @@ export default function Consultas() {
 
           <fieldset>
             <legend className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Datos generales</legend>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="label">Paciente *</label>
                 <select className="input" name="paciente" value={form.paciente} onChange={handleChange} required>
@@ -402,7 +402,7 @@ export default function Consultas() {
 
           <fieldset>
             <legend className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Signos vitales</legend>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {[
                 { name: "signosVitales.presionArterial", label: "Presión arterial", placeholder: "120/80" },
                 { name: "signosVitales.frecuenciaCardiaca", label: "Frec. cardíaca (lpm)", type: "number" },
@@ -431,7 +431,7 @@ export default function Consultas() {
             </div>
             <div className="space-y-3">
               {receta.map((item, i) => (
-                <div key={i} className="grid grid-cols-4 gap-2 items-start bg-slate-50 rounded-lg p-3">
+                <div key={i} className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-start bg-slate-50 rounded-lg p-3">
                   <div>
                     <label className="label">Medicamento</label>
                     <input className="input" value={item.medicamento} onChange={(e) => handleRecetaChange(i, "medicamento", e.target.value)} />
