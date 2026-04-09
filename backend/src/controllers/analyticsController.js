@@ -61,26 +61,37 @@ export async function consultasPorEspecialidad(req, res) {
 export async function consultasPorMes(req, res) {
   try {
     const dateRange = buildDateFilter(req.query);
+    const byDay = req.query.granularity === "day";
     const matchStage = { estado: { $ne: "cancelada" } };
     if (dateRange) matchStage.fecha = dateRange;
 
-    const data = await Consulta.aggregate([
-      { $match: matchStage },
-      {
-        $group: {
-          _id: { year: { $year: "$fecha" }, month: { $month: "$fecha" } },
-          total: { $sum: 1 },
-        },
-      },
-      { $sort: { "_id.year": 1, "_id.month": 1 } },
-      {
-        $project: {
+    const groupId = byDay
+      ? { year: { $year: "$fecha" }, month: { $month: "$fecha" }, day: { $dayOfMonth: "$fecha" } }
+      : { year: { $year: "$fecha" }, month: { $month: "$fecha" } };
+
+    const sortStage = byDay
+      ? { "_id.year": 1, "_id.month": 1, "_id.day": 1 }
+      : { "_id.year": 1, "_id.month": 1 };
+
+    const MESES = ["", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+    const projectStage = byDay
+      ? {
+          _id: 0,
+          mes: {
+            $concat: [
+              { $toString: "$_id.day" },
+              " ",
+              { $arrayElemAt: [MESES, "$_id.month"] },
+            ],
+          },
+          total: 1,
+        }
+      : {
           _id: 0,
           mes: {
             $let: {
-              vars: {
-                meses: ["", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-              },
+              vars: { meses: MESES },
               in: {
                 $concat: [
                   { $arrayElemAt: ["$$meses", "$_id.month"] },
@@ -91,8 +102,13 @@ export async function consultasPorMes(req, res) {
             },
           },
           total: 1,
-        },
-      },
+        };
+
+    const data = await Consulta.aggregate([
+      { $match: matchStage },
+      { $group: { _id: groupId, total: { $sum: 1 } } },
+      { $sort: sortStage },
+      { $project: projectStage },
     ]);
     res.json(data);
   } catch (err) {

@@ -551,6 +551,19 @@ const consultaData = [
   mk(torres, endocrino, "2026-04-03", "Endocrinología", "Control hipotiroidismo y peso", "Hipotiroidismo compensado. Descenso 4kg. IMC 30.",
     [["Levotiroxina","100mcg"]]),
 
+  // ÚLTIMOS 15 DÍAS — cobertura diaria 26/03/2026 – 09/04/2026
+  mk(acosta, pedi,      "2026-03-26", "Pediatría",       "Tos persistente y fiebre baja",                "Bronquitis aguda viral. Tratamiento sintomático.",           [["Ambroxol","15mg/5ml"],["Ibuprofeno","200mg"]]),
+  mk(sosa, oftalmo,     "2026-03-27", "Oftalmología",    "Sensación de cuerpo extraño OD",               "Conjuntivitis bacteriana OD.",                               [["Tobramicina colirio","0.3%"]]),
+  mk(ibanez, cardio,    "2026-03-28", "Cardiología",     "Palpitaciones y mareo leve",                   "Extrasístoles ventriculares aisladas. Holter indicado.",     [["Atenolol","25mg"]]),
+  mk(nunez, endocrino,  "2026-03-29", "Endocrinología",  "Hipoglucemias nocturnas frecuentes",           "DBT2. Ajuste insulina basal por hipoglucemias.",             [["Insulina Glargina","24UI"],["Metformina","1000mg"]]),
+  mk(vargas, trauma,    "2026-03-30", "Traumatología",   "Dolor agudo lumbar tras esfuerzo",             "Lumbalgia aguda sobre base crónica. Reposo relativo.",       [["Diclofenac","75mg"],["Ciclobenzaprina","5mg"]]),
+  mk(morales, dermato,  "2026-03-31", "Dermatología",    "Sequedad intensa por Isotretinoína",           "Efecto adverso leve. Refuerzo de hidratación.",              [["Isotretinoína","40mg"],["Pantenol crema","5%"]]),
+  mk(quiroga, gineco,   "2026-04-01", "Ginecología",     "Sangrado intermenstrual leve",                 "Spotting hormonal. TRH bien tolerada. Sin patología.",       [["Estradiol gel transdérmico","0.5mg"],["Progesterona micronizada","200mg"]]),
+  mk(benitez, clinica,  "2026-04-04", "Clínica Médica",  "Astenia y cefalea leve post-viral",            "Síndrome viral autolimitado. DBT2 estable.",                 [["Metformina","850mg"],["Paracetamol","1g"]]),
+  mk(diaz, neuro,       "2026-04-05", "Neurología",      "Crisis migrañosa severa con aura visual",      "Migraña con aura. Ajuste medicación de rescate.",           [["Sumatriptán","100mg"],["Metoclopramida","10mg"],["Topiramato","100mg"]]),
+  mk(blanco, cardio,    "2026-04-06", "Cardiología",     "Dolor precordial atípico. ECG urgente.",       "ECG normal. Dolor músculo-esquelético. Sin cardiopatía aguda.", [["Ibuprofeno","400mg"],["Omeprazol","20mg"]]),
+  mk(cabrera, clinica,  "2026-04-07", "Clínica Médica",  "Distensión abdominal y cólicos",               "CU en leve actividad. Sin brote formal. Ajuste sintomático.",[["Mesalazina","1g"],["Azatioprina","100mg"]]),
+
   // PROGRAMADAS — hasta el 16 de abril 2026
   mk(diaz, cardio, "2026-04-15", "Cardiología", "Control trimestral IC programado", "Pendiente", [], "programada"),
   mk(herrera, neuro, "2026-04-09", "Neurología", "Control epilepsia", "Pendiente", [], "programada"),

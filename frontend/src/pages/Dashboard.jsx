@@ -80,6 +80,14 @@ export default function Dashboard() {
         const p = {};
         if (fechaDesde) p.fechaDesde = fechaDesde;
         if (fechaHasta) p.fechaHasta = fechaHasta;
+
+        if (fechaDesde || fechaHasta) {
+            const desde = fechaDesde ? new Date(fechaDesde) : new Date(0);
+            const hasta = fechaHasta ? new Date(fechaHasta) : new Date();
+            const diffDays = (hasta - desde) / 86400000;
+            if (diffDays <= 30) p.granularity = "day";
+        }
+
         return p;
     }, [fechaDesde, fechaHasta]);
 
@@ -190,10 +198,9 @@ export default function Dashboard() {
                     {hasFilter && (
                         <button
                             onClick={clearFilters}
-                            className="text-slate-400 hover:text-slate-600 transition-colors"
-                            title="Limpiar filtro"
+                            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-500 transition-colors"
                         >
-                            <X size={16} />
+                            <X size={14} /> Limpiar filtros
                         </button>
                     )}
                 </div>
@@ -241,7 +248,9 @@ export default function Dashboard() {
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                         <div className="card">
                             <h2 className="font-semibold text-slate-700 mb-4">
-                                Consultas por mes
+                                {buildParams().granularity === "day"
+                                    ? "Consultas por día"
+                                    : "Consultas por mes"}
                             </h2>
                             {mesData.length === 0 ? (
                                 <div className="flex items-center justify-center h-40 text-slate-400 text-sm">
