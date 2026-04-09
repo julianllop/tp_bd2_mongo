@@ -76,7 +76,7 @@ export default function Pacientes() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const hasActiveFilters = grupoSanguineo || obraSocial || fechaNacDesde || fechaNacHasta;
+  const hasActiveFilters = search || grupoSanguineo || obraSocial || fechaNacDesde || fechaNacHasta;
 
   const load = useCallback(async (targetPage = page) => {
     setLoading(true);
@@ -101,6 +101,7 @@ export default function Pacientes() {
   }, [load]);
 
   function clearFilters() {
+    setSearch("");
     setGrupoSanguineo("");
     setObraSocial("");
     setFechaNacDesde("");
@@ -242,7 +243,7 @@ export default function Pacientes() {
           </div>
           {hasActiveFilters && (
             <button onClick={clearFilters} className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-500 transition-colors pb-2">
-              <X size={14} /> Limpiar
+              <X size={14} /> Limpiar filtros
             </button>
           )}
         </div>
