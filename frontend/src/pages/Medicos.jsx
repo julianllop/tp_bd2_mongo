@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
-import { Search, Plus, Pencil, Trash2, SlidersHorizontal, X } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, X } from "lucide-react";
 import Modal from "../components/shared/Modal.jsx";
 import Table from "../components/shared/Table.jsx";
 import Spinner from "../components/shared/Spinner.jsx";
 import Pagination from "../components/shared/Pagination.jsx";
+import MultiSelect from "../components/shared/MultiSelect.jsx";
 import { getMedicos, createMedico, updateMedico, deleteMedico } from "../api/index.js";
 
 const ESPECIALIDADES_OPCIONES = [
@@ -41,8 +42,7 @@ export default function Medicos() {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [especialidad, setEspecialidad] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
+  const [especialidades, setEspecialidades] = useState([]);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -61,21 +61,21 @@ export default function Medicos() {
     try {
       const params = { page, limit: PAGE_SIZE };
       if (search) params.search = search;
-      if (especialidad) params.especialidad = especialidad;
+      if (especialidades.length) params.especialidad = especialidades.join(",");
       const res = await getMedicos(params);
       setMedicos(res.data);
       setPagination({ total: res.total, totalPages: res.totalPages });
     } finally {
       setLoading(false);
     }
-  }, [search, especialidad, page]);
+  }, [search, especialidades, page]);
 
   useEffect(() => {
     const t = setTimeout(() => load(), 300);
     return () => clearTimeout(t);
   }, [load]);
 
-  useEffect(() => { setPage(1); }, [search, especialidad]);
+  useEffect(() => { setPage(1); }, [search, especialidades]);
 
   function openNew() {
     setEditing(null);
@@ -175,49 +175,31 @@ export default function Medicos() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <button
-          onClick={() => setShowFilters((v) => !v)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            showFilters || especialidad
-              ? "bg-primary text-white"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-          }`}
-        >
-          <SlidersHorizontal size={15} />
-          Filtros
-          {especialidad && <span className="bg-white/30 text-xs rounded-full px-1.5">1</span>}
-        </button>
         <button className="btn-primary flex items-center gap-2" onClick={openNew}>
           <Plus size={16} /> Nuevo médico
         </button>
       </div>
 
       {/* Filter panel */}
-      {showFilters && (
-        <div className="card flex flex-wrap items-end gap-4">
-          <div>
-            <label className="label">Especialidad</label>
-            <select
-              className="input min-w-[200px]"
-              value={especialidad}
-              onChange={(e) => setEspecialidad(e.target.value)}
-            >
-              <option value="">Todas las especialidades</option>
-              {ESPECIALIDADES_OPCIONES.map((e) => (
-                <option key={e} value={e}>{e}</option>
-              ))}
-            </select>
-          </div>
-          {especialidad && (
-            <button
-              onClick={() => setEspecialidad("")}
-              className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-500 transition-colors pb-2"
-            >
-              <X size={14} /> Limpiar
-            </button>
-          )}
+      <div className="card flex flex-wrap items-end gap-4">
+        <div className="min-w-[200px]">
+          <MultiSelect
+            label="Especialidad"
+            options={ESPECIALIDADES_OPCIONES}
+            value={especialidades}
+            onChange={setEspecialidades}
+            placeholder="Todas las especialidades"
+          />
         </div>
-      )}
+        {especialidades.length > 0 && (
+          <button
+            onClick={() => setEspecialidades([])}
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-500 transition-colors pb-2"
+          >
+            <X size={14} /> Limpiar
+          </button>
+        )}
+      </div>
 
       <div className="card p-0 overflow-hidden">
         {loading ? (

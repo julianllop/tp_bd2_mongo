@@ -15,7 +15,8 @@ export async function getAll(req, res) {
       ];
     }
     if (especialidad) {
-      filter.especialidades = new RegExp(especialidad, "i");
+      const esps = especialidad.split(",").map((s) => s.trim()).filter(Boolean);
+      filter.especialidades = esps.length === 1 ? { $in: [esps[0]] } : { $in: esps };
     }
 
     const currentPage = Math.max(1, parseInt(page) || 1);

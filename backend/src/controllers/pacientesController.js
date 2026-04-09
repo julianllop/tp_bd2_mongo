@@ -10,10 +10,15 @@ export async function getAll(req, res) {
       filter.$or = [{ nombre: regex }, { apellido: regex }, { dni: regex }];
     }
     if (grupoSanguineo) {
-      filter.grupoSanguineo = grupoSanguineo;
+      const grupos = grupoSanguineo.split(",").map((s) => s.trim()).filter(Boolean);
+      filter.grupoSanguineo = grupos.length === 1 ? grupos[0] : { $in: grupos };
     }
     if (obraSocial) {
-      filter["obraSocial.nombre"] = new RegExp(obraSocial, "i");
+      const obras = obraSocial.split(",").map((s) => s.trim()).filter(Boolean);
+      filter["obraSocial.nombre"] =
+        obras.length === 1
+          ? new RegExp(obras[0], "i")
+          : { $in: obras.map((o) => new RegExp(o, "i")) };
     }
     if (fechaNacimientoDesde || fechaNacimientoHasta) {
       filter.fechaNacimiento = {};

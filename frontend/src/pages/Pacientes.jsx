@@ -5,6 +5,7 @@ import Modal from "../components/shared/Modal.jsx";
 import Table from "../components/shared/Table.jsx";
 import Spinner from "../components/shared/Spinner.jsx";
 import Pagination from "../components/shared/Pagination.jsx";
+import MultiSelect from "../components/shared/MultiSelect.jsx";
 import { getPacientes, createPaciente, updatePaciente, deletePaciente } from "../api/index.js";
 
 const GRUPOS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -60,8 +61,8 @@ export default function Pacientes() {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [grupoSanguineo, setGrupoSanguineo] = useState("");
-  const [obraSocial, setObraSocial] = useState("");
+  const [grupoSanguineo, setGrupoSanguineo] = useState([]);
+  const [obraSocial, setObraSocial] = useState([]);
   const [fechaNacDesde, setFechaNacDesde] = useState("");
   const [fechaNacHasta, setFechaNacHasta] = useState("");
   // Pagination
@@ -76,15 +77,15 @@ export default function Pacientes() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const hasActiveFilters = search || grupoSanguineo || obraSocial || fechaNacDesde || fechaNacHasta;
+  const hasActiveFilters = search || grupoSanguineo.length || obraSocial.length || fechaNacDesde || fechaNacHasta;
 
   const load = useCallback(async (targetPage = page) => {
     setLoading(true);
     try {
       const params = { page: targetPage, limit: PAGE_SIZE };
       if (search) params.search = search;
-      if (grupoSanguineo) params.grupoSanguineo = grupoSanguineo;
-      if (obraSocial) params.obraSocial = obraSocial;
+      if (grupoSanguineo.length) params.grupoSanguineo = grupoSanguineo.join(",");
+      if (obraSocial.length) params.obraSocial = obraSocial.join(",");
       if (fechaNacDesde) params.fechaNacimientoDesde = fechaNacDesde;
       if (fechaNacHasta) params.fechaNacimientoHasta = fechaNacHasta;
       const res = await getPacientes(params);
@@ -102,8 +103,8 @@ export default function Pacientes() {
 
   function clearFilters() {
     setSearch("");
-    setGrupoSanguineo("");
-    setObraSocial("");
+    setGrupoSanguineo([]);
+    setObraSocial([]);
     setFechaNacDesde("");
     setFechaNacHasta("");
     setPage(1);
@@ -219,19 +220,23 @@ export default function Pacientes() {
 
       {/* Filters panel */}
       <div className="card flex flex-wrap items-end gap-4">
-          <div>
-            <label className="label">Grupo sanguíneo</label>
-            <select className="input min-w-[140px]" value={grupoSanguineo} onChange={(e) => setGrupoSanguineo(e.target.value)}>
-              <option value="">Todos</option>
-              {GRUPOS.map((g) => <option key={g} value={g}>{g}</option>)}
-            </select>
+          <div className="min-w-[140px]">
+            <MultiSelect
+              label="Grupo sanguíneo"
+              options={GRUPOS}
+              value={grupoSanguineo}
+              onChange={setGrupoSanguineo}
+              placeholder="Todos"
+            />
           </div>
-          <div>
-            <label className="label">Obra social</label>
-            <select className="input min-w-[160px]" value={obraSocial} onChange={(e) => setObraSocial(e.target.value)}>
-              <option value="">Todas</option>
-              {OBRAS_SOCIALES.map((o) => <option key={o} value={o}>{o}</option>)}
-            </select>
+          <div className="min-w-[160px]">
+            <MultiSelect
+              label="Obra social"
+              options={OBRAS_SOCIALES}
+              value={obraSocial}
+              onChange={setObraSocial}
+              placeholder="Todas"
+            />
           </div>
           <div>
             <label className="label">Nació desde</label>

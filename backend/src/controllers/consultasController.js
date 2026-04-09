@@ -6,9 +6,18 @@ export async function getAll(req, res) {
     const filter = {};
 
     if (paciente) filter.paciente = paciente;
-    if (medico) filter.medico = medico;
-    if (especialidad) filter.especialidad = new RegExp(especialidad, "i");
-    if (estado) filter.estado = estado;
+    if (medico) {
+      const medicos = medico.split(",").map((s) => s.trim()).filter(Boolean);
+      filter.medico = medicos.length === 1 ? medicos[0] : { $in: medicos };
+    }
+    if (especialidad) {
+      const esps = especialidad.split(",").map((s) => s.trim()).filter(Boolean);
+      filter.especialidad = esps.length === 1 ? esps[0] : { $in: esps };
+    }
+    if (estado) {
+      const estados = estado.split(",").map((s) => s.trim()).filter(Boolean);
+      filter.estado = estados.length === 1 ? estados[0] : { $in: estados };
+    }
     if (search) {
       const regex = new RegExp(search, "i");
       filter.$or = [{ especialidad: regex }, { diagnostico: regex }, { motivoConsulta: regex }];

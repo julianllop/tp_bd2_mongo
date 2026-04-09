@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Search } from "lucide-react";
 import Modal from "../components/shared/Modal.jsx";
 import Table from "../components/shared/Table.jsx";
 import Spinner from "../components/shared/Spinner.jsx";
 import Pagination from "../components/shared/Pagination.jsx";
+import MultiSelect from "../components/shared/MultiSelect.jsx";
 import {
   getConsultas, getMedicos, getPacientes,
   createConsulta, updateConsulta, deleteConsulta,
@@ -70,9 +71,12 @@ export default function Consultas() {
 
   // Filters
   const [filterPaciente, setFilterPaciente] = useState("");
-  const [filterMedico, setFilterMedico] = useState("");
-  const [filterEsp, setFilterEsp] = useState("");
-  const [filterEst, setFilterEst] = useState("");
+  const [pacienteSearch, setPacienteSearch] = useState("");
+  const [pacienteDropOpen, setPacienteDropOpen] = useState(false);
+  const pacienteRef = useRef(null);
+  const [filterMedico, setFilterMedico] = useState([]);
+  const [filterEsp, setFilterEsp] = useState([]);
+  const [filterEst, setFilterEst] = useState([]);
   const [filterFechaDesde, setFilterFechaDesde] = useState("");
   const [filterFechaHasta, setFilterFechaHasta] = useState("");
 
@@ -89,16 +93,16 @@ export default function Consultas() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const hasActiveFilters = filterPaciente || filterMedico || filterEsp || filterEst || filterFechaDesde || filterFechaHasta;
+  const hasActiveFilters = filterPaciente || filterMedico.length || filterEsp.length || filterEst.length || filterFechaDesde || filterFechaHasta;
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const params = { page, limit: PAGE_SIZE };
       if (filterPaciente) params.paciente = filterPaciente;
-      if (filterMedico) params.medico = filterMedico;
-      if (filterEsp) params.especialidad = filterEsp;
-      if (filterEst) params.estado = filterEst;
+      if (filterMedico.length) params.medico = filterMedico.join(",");
+      if (filterEsp.length) params.especialidad = filterEsp.join(",");
+      if (filterEst.length) params.estado = filterEst.join(",");
       if (filterFechaDesde) params.fechaDesde = filterFechaDesde;
       if (filterFechaHasta) params.fechaHasta = filterFechaHasta;
       const res = await getConsultas(params);
@@ -124,15 +128,49 @@ export default function Consultas() {
 
   useEffect(() => { setPage(1); }, [filterPaciente, filterMedico, filterEsp, filterEst, filterFechaDesde, filterFechaHasta]);
 
+  // Close paciente dropdown on outside click
+  useEffect(() => {
+    function handleOutside(e) {
+      if (pacienteRef.current && !pacienteRef.current.contains(e.target)) {
+        setPacienteDropOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
+
   function clearFilters() {
     setFilterPaciente("");
-    setFilterMedico("");
-    setFilterEsp("");
-    setFilterEst("");
+    setPacienteSearch("");
+    setFilterMedico([]);
+    setFilterEsp([]);
+    setFilterEst([]);
     setFilterFechaDesde("");
     setFilterFechaHasta("");
     setPage(1);
   }
+
+  function selectPaciente(p) {
+    setFilterPaciente(p._id);
+    setPacienteSearch(`${p.apellido}, ${p.nombre}`);
+    setPacienteDropOpen(false);
+  }
+
+  function clearPaciente() {
+    setFilterPaciente("");
+    setPacienteSearch("");
+  }
+
+  const pacientesFiltrados = pacienteSearch
+    ? pacientesList.filter((p) => {
+        const q = pacienteSearch.toLowerCase();
+        return (
+          p.nombre.toLowerCase().includes(q) ||
+          p.apellido.toLowerCase().includes(q) ||
+          p.dni?.includes(q)
+        );
+      })
+    : pacientesList;
 
   function openNew() {
     setEditing(null);
@@ -256,56 +294,95 @@ export default function Consultas() {
 
       {/* Filter panel */}
       <div className="card space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-            <div>
-              <label className="label">Paciente</label>
-              <select className="input" value={filterPaciente} onChange={(e) => setFilterPaciente(e.target.value)}>
-                <option value="">Todos</option>
-                {pacientesList.map((p) => (
-                  <option key={p._id} value={p._id}>{p.apellido}, {p.nombre}</option>
-                ))}
-              </select>
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+          {/* Paciente searchbar */}
+          <div ref={pacienteRef} className="relative">
+            <label className="label">Paciente</label>
+            <div className="relative">
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                className="input pl-8 pr-7"
+                placeholder="Buscar paciente…"
+                value={pacienteSearch}
+                onChange={(e) => {
+                  setPacienteSearch(e.target.value);
+                  setFilterPaciente("");
+                  setPacienteDropOpen(true);
+                }}
+                onFocus={() => setPacienteDropOpen(true)}
+              />
+              {pacienteSearch && (
+                <button
+                  type="button"
+                  onClick={clearPaciente}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500"
+                >
+                  <X size={13} />
+                </button>
+              )}
             </div>
-            <div>
-              <label className="label">Médico</label>
-              <select className="input" value={filterMedico} onChange={(e) => setFilterMedico(e.target.value)}>
-                <option value="">Todos</option>
-                {medicosList.map((m) => (
-                  <option key={m._id} value={m._id}>Dr./Dra. {m.apellido}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="label">Especialidad</label>
-              <select className="input" value={filterEsp} onChange={(e) => setFilterEsp(e.target.value)}>
-                <option value="">Todas</option>
-                {especialidades.map((e) => <option key={e} value={e}>{e}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="label">Estado</label>
-              <select className="input" value={filterEst} onChange={(e) => setFilterEst(e.target.value)}>
-                <option value="">Todos</option>
-                <option value="realizada">Realizada</option>
-                <option value="programada">Programada</option>
-                <option value="cancelada">Cancelada</option>
-              </select>
-            </div>
-            <div>
-              <label className="label">Fecha desde</label>
-              <input type="date" className="input" value={filterFechaDesde} onChange={(e) => setFilterFechaDesde(e.target.value)} />
-            </div>
-            <div>
-              <label className="label">Fecha hasta</label>
-              <input type="date" className="input" value={filterFechaHasta} onChange={(e) => setFilterFechaHasta(e.target.value)} />
-            </div>
+            {pacienteDropOpen && pacienteSearch && !filterPaciente && (
+              <div className="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg py-1 max-h-48 overflow-auto">
+                {pacientesFiltrados.length === 0 ? (
+                  <p className="px-3 py-2 text-sm text-slate-400">Sin resultados</p>
+                ) : (
+                  pacientesFiltrados.slice(0, 20).map((p) => (
+                    <button
+                      key={p._id}
+                      type="button"
+                      className="w-full text-left px-3 py-1.5 text-sm hover:bg-slate-50"
+                      onClick={() => selectPaciente(p)}
+                    >
+                      {p.apellido}, {p.nombre} — {p.dni}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
           </div>
-          {hasActiveFilters && (
-            <button onClick={clearFilters} className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-500 transition-colors">
-              <X size={14} /> Limpiar todos los filtros
-            </button>
-          )}
+
+          <div>
+            <MultiSelect
+              label="Médico"
+              options={medicosList.map((m) => ({ value: m._id, label: `Dr./Dra. ${m.apellido}, ${m.nombre}` }))}
+              value={filterMedico}
+              onChange={setFilterMedico}
+              placeholder="Todos"
+            />
+          </div>
+          <div>
+            <MultiSelect
+              label="Especialidad"
+              options={especialidades}
+              value={filterEsp}
+              onChange={setFilterEsp}
+              placeholder="Todas"
+            />
+          </div>
+          <div>
+            <MultiSelect
+              label="Estado"
+              options={["realizada", "programada", "cancelada"]}
+              value={filterEst}
+              onChange={setFilterEst}
+              placeholder="Todos"
+            />
+          </div>
+          <div>
+            <label className="label">Fecha desde</label>
+            <input type="date" className="input" value={filterFechaDesde} onChange={(e) => setFilterFechaDesde(e.target.value)} />
+          </div>
+          <div>
+            <label className="label">Fecha hasta</label>
+            <input type="date" className="input" value={filterFechaHasta} onChange={(e) => setFilterFechaHasta(e.target.value)} />
+          </div>
         </div>
+        {hasActiveFilters && (
+          <button onClick={clearFilters} className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-500 transition-colors">
+            <X size={14} /> Limpiar todos los filtros
+          </button>
+        )}
+      </div>
 
       <div className="card p-0 overflow-hidden">
         {loading ? (
