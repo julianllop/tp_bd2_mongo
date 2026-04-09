@@ -16,7 +16,7 @@ export const updatePaciente = (id, data) =>
 export const deletePaciente = (id) =>
     api.delete(`/pacientes/${id}`).then((r) => r.data);
 
-// Medicos — params: { search, especialidad }
+// Medicos — params: { search, especialidad } (especialidad puede ser string "A,B,C")
 export const getMedicos = (params = {}) =>
     api.get("/medicos", { params }).then((r) => r.data);
 export const getMedico = (id) => api.get(`/medicos/${id}`).then((r) => r.data);
@@ -30,6 +30,8 @@ export const deleteMedico = (id) =>
 // Consultas — params: { paciente, medico, especialidad, estado, fechaDesde, fechaHasta }
 export const getConsultas = (params = {}) =>
     api.get("/consultas", { params }).then((r) => r.data);
+export const getConsulta = (id) =>
+    api.get(`/consultas/${id}`).then((r) => r.data);
 export const createConsulta = (data) =>
     api.post("/consultas", data).then((r) => r.data);
 export const updateConsulta = (id, data) =>

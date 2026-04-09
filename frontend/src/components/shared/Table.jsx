@@ -1,4 +1,4 @@
-export default function Table({ columns, data, emptyMessage = "Sin resultados." }) {
+export default function Table({ columns, data, emptyMessage = "Sin resultados.", onRowClick }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -23,7 +23,11 @@ export default function Table({ columns, data, emptyMessage = "Sin resultados." 
             </tr>
           ) : (
             data.map((row, i) => (
-              <tr key={row._id ?? i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+              <tr
+                key={row._id ?? i}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                className={`border-b border-slate-50 hover:bg-slate-50 transition-colors ${onRowClick ? "cursor-pointer" : ""}`}
+              >
                 {columns.map((col) => (
                   <td key={col.key} className="py-3 px-4 text-slate-700">
                     {col.render ? col.render(row) : row[col.key]}

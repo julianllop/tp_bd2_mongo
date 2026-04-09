@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import { Plus, Pencil, Trash2, SlidersHorizontal, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Pencil, Trash2, X } from "lucide-react";
 import Modal from "../components/shared/Modal.jsx";
 import Table from "../components/shared/Table.jsx";
 import Spinner from "../components/shared/Spinner.jsx";
@@ -61,13 +62,13 @@ function consultaToForm(c) {
 }
 
 export default function Consultas() {
+  const navigate = useNavigate();
   const [consultas, setConsultas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pacientesList, setPacientesList] = useState([]);
   const [medicosList, setMedicosList] = useState([]);
 
   // Filters
-  const [showFilters, setShowFilters] = useState(false);
   const [filterPaciente, setFilterPaciente] = useState("");
   const [filterMedico, setFilterMedico] = useState("");
   const [filterEsp, setFilterEsp] = useState("");
@@ -225,7 +226,7 @@ export default function Consultas() {
       key: "acciones",
       label: "Acciones",
       render: (r) => (
-        <div className="flex gap-2">
+        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
           <button onClick={() => openEdit(r)} className="text-slate-400 hover:text-primary transition-colors">
             <Pencil size={15} />
           </button>
@@ -248,30 +249,13 @@ export default function Consultas() {
 
       {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
-        <button
-          onClick={() => setShowFilters((v) => !v)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            showFilters || hasActiveFilters
-              ? "bg-primary text-white"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-          }`}
-        >
-          <SlidersHorizontal size={15} />
-          Filtros
-          {hasActiveFilters && (
-            <span className="bg-white/30 text-xs rounded-full px-1.5">
-              {[filterPaciente, filterMedico, filterEsp, filterEst, filterFechaDesde, filterFechaHasta].filter(Boolean).length}
-            </span>
-          )}
-        </button>
         <button className="btn-primary flex items-center gap-2 ml-auto" onClick={openNew}>
           <Plus size={16} /> Nueva consulta
         </button>
       </div>
 
       {/* Filter panel */}
-      {showFilters && (
-        <div className="card space-y-4">
+      <div className="card space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
             <div>
               <label className="label">Paciente</label>
@@ -322,14 +306,13 @@ export default function Consultas() {
             </button>
           )}
         </div>
-      )}
 
       <div className="card p-0 overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-16"><Spinner /></div>
         ) : (
           <>
-            <Table columns={columns} data={consultas} emptyMessage="No se encontraron consultas." />
+            <Table columns={columns} data={consultas} emptyMessage="No se encontraron consultas." onRowClick={(r) => navigate(`/consultas/${r._id}`)} />
             <Pagination
               page={page}
               totalPages={pagination.totalPages}

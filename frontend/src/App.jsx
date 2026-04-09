@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Pacientes from "./pages/Pacientes.jsx";
 import Medicos from "./pages/Medicos.jsx";
 import Consultas from "./pages/Consultas.jsx";
+import DetallePaciente from "./pages/DetallePaciente.jsx";
+import DetalleConsulta from "./pages/DetalleConsulta.jsx";
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,8 +41,10 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/pacientes" element={<Pacientes />} />
+            <Route path="/pacientes/:id" element={<DetallePaciente />} />
             <Route path="/medicos" element={<Medicos />} />
             <Route path="/consultas" element={<Consultas />} />
+            <Route path="/consultas/:id" element={<DetalleConsulta />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
